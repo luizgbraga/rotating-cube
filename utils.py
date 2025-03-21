@@ -3,9 +3,7 @@ import numpy as np
 
 def normalize(vector: np.ndarray) -> np.ndarray:
     magnitude = np.linalg.norm(vector)
-    if magnitude > 0:
-        return vector / magnitude
-    return vector
+    return vector / magnitude if magnitude > 0 else vector
 
 
 def compute_rotation_matrices(angle_x, angle_y, angle_z):

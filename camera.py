@@ -2,7 +2,7 @@ import numpy as np
 
 
 class Camera:
-    def __init__(self, position=np.array([0, 0, -5]), fov=60):
+    def __init__(self, position=np.array([0, 0, 0]), fov=60):
         self.position = position
         self.fov = fov
         self.fov_rad = np.radians(fov)
