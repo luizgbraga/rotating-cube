@@ -10,9 +10,12 @@ from renderer import Renderer
 
 
 class CubeAnimation:
-    def __init__(self, texture_path: str, screen_width=600, screen_height=600):
+    def __init__(
+        self, texture_path: str, screen_width=600, screen_height=600, speed=1.0
+    ):
         self.screen_width = screen_width
         self.screen_height = screen_height
+        self.speed = speed
         self.texture = np.array(Image.open(texture_path).convert("RGB"))
 
         self.camera = Camera(position=np.array([0, 0, -5]), fov=60)
@@ -20,15 +23,13 @@ class CubeAnimation:
         self.renderer = Renderer(screen_width, screen_height, self.camera)
 
         self.start_time = time()
-        self.last_update = 0
-        self.frame_count = 0
 
     def update(self):
-        current_time = time() - self.start_time
+        dt = time() - self.start_time
 
-        angle_x = current_time * 0.3
-        angle_y = current_time * 0.5
-        angle_z = current_time * 0.1
+        angle_x = dt * 0.3 * self.speed
+        angle_y = dt * 0.5 * self.speed
+        angle_z = dt * 0.1 * self.speed
 
         self.cube.rotate(angle_x, angle_y, angle_z)
 
@@ -48,5 +49,5 @@ class CubeAnimation:
 
 
 if __name__ == "__main__":
-    animation = CubeAnimation("image.png")
+    animation = CubeAnimation("image.png", speed=1.5)
     animation.run()
