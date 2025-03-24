@@ -13,11 +13,8 @@ class Renderer:
         vertices_pos_cam = vertices - self.camera.position
         z = vertices_pos_cam[:, 2]
 
-        z_safe = np.where(np.abs(z) < 1e-10, 1e-10, z)  # avoid division by zero
-
-        focal_z_ratio = self.camera.focal_length / z_safe
-        x_projected = vertices_pos_cam[:, 0] * focal_z_ratio
-        y_projected = vertices_pos_cam[:, 1] * focal_z_ratio
+        x_projected = (vertices_pos_cam[:, 0] * self.camera.focal_length) / z
+        y_projected = (vertices_pos_cam[:, 1] * self.camera.focal_length) / z
 
         projected = np.zeros((len(vertices), 2))
         projected[:, 0] = (

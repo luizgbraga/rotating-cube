@@ -16,7 +16,7 @@ class CubeAnimation:
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.speed = speed
-        self.texture = np.array(Image.open(texture_path).convert("RGB"))
+        self.texture = np.array(Image.open(texture_path))
 
         self.camera = Camera(position=np.array([0, 0, -5]), fov=60)
         self.cube = Cube(size=2, texture=self.texture)

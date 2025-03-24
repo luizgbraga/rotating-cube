@@ -1,11 +1,6 @@
 import numpy as np
 
 
-def normalize(vector: np.ndarray) -> np.ndarray:
-    magnitude = np.linalg.norm(vector)
-    return vector / magnitude if magnitude > 0 else vector
-
-
 def compute_rotation_matrices(angle_x, angle_y, angle_z):
     cos_x, sin_x = np.cos(angle_x), np.sin(angle_x)
     cos_y, sin_y = np.cos(angle_y), np.sin(angle_y)

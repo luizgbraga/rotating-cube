@@ -1,12 +1,11 @@
 import numpy as np
 
-from utils import compute_rotation_matrices, normalize
+from utils import compute_rotation_matrices
 
 
 class TexturedFace:
     def __init__(self, vertices_indices):
         self.vertices_indices = vertices_indices
-        self.normal = None
         self.center = None
         self.depth = None
 
@@ -14,11 +13,6 @@ class TexturedFace:
         face_vertices = transformed_vertices[self.vertices_indices]
         self.center = np.mean(face_vertices, axis=0)
         self.depth = self.center[2]
-
-        v0, v1, v2 = face_vertices[0], face_vertices[1], face_vertices[2]
-        edge1 = v1 - v0
-        edge2 = v2 - v0
-        self.normal = normalize(np.cross(edge1, edge2))
 
 
 class Cube:
