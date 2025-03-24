@@ -24,57 +24,43 @@ class Renderer:
 
         return projected
 
-    def map_texture_to_face(self, texture, face_vertices_2d):
-        face_vertices_2d = np.array(face_vertices_2d, dtype=np.int32)
-
-        mask = np.zeros((self.height, self.width), dtype=np.uint8)
-        cv2.fillConvexPoly(mask, face_vertices_2d, 255)
-
+    def get_face_homography(self, texture, face_vertices_2d):
         h, w = texture.shape[:2]
-        src_points = np.array(
+        src_points = np.array(face_vertices_2d, dtype=np.float32)
+        dst_points = np.array(
             [[0, 0], [w - 1, 0], [w - 1, h - 1], [0, h - 1]], dtype=np.float32
         )
 
-        dst_points = np.array(face_vertices_2d, dtype=np.float32)
-
         H, _ = cv2.findHomography(src_points, dst_points)
-        H_inv = np.linalg.inv(H)
+
+        return H
+
+    def map_texture_to_face(self, texture, face_vertices_2d):
+        face_vertices_2d = np.array(face_vertices_2d, dtype=np.int32)
+
+        H = self.get_face_homography(texture, face_vertices_2d)
+
+        mask = np.zeros((self.height, self.width), dtype=np.uint8)
+        cv2.fillConvexPoly(mask, face_vertices_2d, 255)
+        y_face_indices, x_face_indices = np.where(mask == 255)
+        face_pixels = np.column_stack(
+            (x_face_indices, y_face_indices, np.ones_like(x_face_indices))
+        )
 
         face_image = np.zeros((self.height, self.width, 3), dtype=np.uint8)
-        y_indices, x_indices = np.where(mask > 0)
 
-        pixels = np.column_stack((x_indices, y_indices, np.ones_like(x_indices)))
-        src_pixels = np.dot(pixels, H_inv.T)
+        src_pixels = np.dot(face_pixels, H.T)
+        src_pixels[:, 0] /= src_pixels[:, 2]
+        src_pixels[:, 1] /= src_pixels[:, 2]
 
-        non_zero_mask = np.abs(src_pixels[:, 2]) > 1e-10  # avoid division by zero
+        src_x = src_pixels[:, 0].astype(int)
+        src_y = src_pixels[:, 1].astype(int)
 
-        src_pixels_safe = src_pixels[non_zero_mask]
-        x_indices_safe = x_indices[non_zero_mask]
-        y_indices_safe = y_indices[non_zero_mask]
-
-        src_pixels_safe[:, 0] /= src_pixels_safe[:, 2]
-        src_pixels_safe[:, 1] /= src_pixels_safe[:, 2]
-
-        src_x = src_pixels_safe[:, 0].astype(int)
-        src_y = src_pixels_safe[:, 1].astype(int)
-
-        valid_mask = (src_x >= 0) & (src_x < w) & (src_y >= 0) & (src_y < h)
-
-        valid_dest_x = x_indices_safe[valid_mask]
-        valid_dest_y = y_indices_safe[valid_mask]
-        valid_src_x = src_x[valid_mask]
-        valid_src_y = src_y[valid_mask]
-
-        if len(valid_dest_x) > 0 and len(valid_src_x) > 0:
-            channels = min(texture.shape[2], 3)
-            for i in range(len(valid_dest_x)):
-                if (
-                    0 <= valid_src_y[i] < texture.shape[0]
-                    and 0 <= valid_src_x[i] < texture.shape[1]
-                ):
-                    face_image[valid_dest_y[i], valid_dest_x[i]] = texture[
-                        valid_src_y[i], valid_src_x[i]
-                    ][:channels]
+        channels = min(texture.shape[2], 3)
+        for i in range(len(x_face_indices)):
+            if 0 <= src_y[i] < texture.shape[0] and 0 <= src_x[i] < texture.shape[1]:
+                texture_color = texture[src_y[i], src_x[i]][:channels]
+                face_image[y_face_indices[i], x_face_indices[i]] = texture_color
 
         return face_image, mask
 

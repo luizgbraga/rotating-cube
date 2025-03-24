@@ -1,3 +1,4 @@
+import argparse
 from time import time
 
 import cv2
@@ -40,7 +41,7 @@ class CubeAnimation:
         while True:
             self.update()
             frame = self.render()
-            cv2.imshow("Rotating Cube", frame)
+            cv2.imshow("Cube", frame)
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
@@ -49,5 +50,9 @@ class CubeAnimation:
 
 
 if __name__ == "__main__":
-    animation = CubeAnimation("image.png", speed=1.5)
+    parser = argparse.ArgumentParser(description="Cube Animation")
+    parser.add_argument("--speed", type=float, default=1.5)
+    args = parser.parse_args()
+
+    animation = CubeAnimation("image.png", speed=args.speed)
     animation.run()

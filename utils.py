@@ -1,3 +1,5 @@
+import sys
+
 import numpy as np
 
 
@@ -11,3 +13,15 @@ def compute_rotation_matrices(angle_x, angle_y, angle_z):
     rotation_z = np.array([[cos_z, -sin_z, 0], [sin_z, cos_z, 0], [0, 0, 1]])
 
     return rotation_x, rotation_y, rotation_z
+
+
+def progress_bar(current, total, bar_length=50):
+    percent = float(current) / total
+    arrow = "█" * int(round(percent * bar_length))
+    spaces = " " * (bar_length - len(arrow))
+
+    sys.stdout.write(f"\rProgress: [{arrow}{spaces}] {int(percent * 100)}%")
+    sys.stdout.flush()
+
+    if current == total:
+        sys.stdout.write("\n")
