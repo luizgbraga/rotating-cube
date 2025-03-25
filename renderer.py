@@ -56,11 +56,11 @@ class Renderer:
         src_x = src_pixels[:, 0].astype(int)
         src_y = src_pixels[:, 1].astype(int)
 
-        channels = min(texture.shape[2], 3)
         for i in range(len(x_face_indices)):
             if 0 <= src_y[i] < texture.shape[0] and 0 <= src_x[i] < texture.shape[1]:
-                texture_color = texture[src_y[i], src_x[i]][:channels]
-                face_image[y_face_indices[i], x_face_indices[i]] = texture_color
+                texture_color = texture[src_y[i], src_x[i]][:3]
+                bgr_color = texture_color[::-1]  # OpenCV uses BGR
+                face_image[y_face_indices[i], x_face_indices[i]] = bgr_color
 
         return face_image, mask
 
