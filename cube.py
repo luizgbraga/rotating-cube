@@ -40,12 +40,12 @@ class Cube:
 
     def _define_faces(self):
         face_indices = [
-            [0, 1, 2, 3],  # front face (-z)
-            [4, 5, 6, 7],  # back face (+z)
-            [0, 1, 5, 4],  # bottom face (-y)
-            [2, 3, 7, 6],  # top face (+y)
-            [0, 3, 7, 4],  # left face (-x)
-            [1, 2, 6, 5],  # right face (+x)
+            [0, 1, 2, 3],  # -z
+            [4, 5, 6, 7],  # +z
+            [0, 1, 5, 4],  # -y
+            [2, 3, 7, 6],  # +y
+            [0, 3, 7, 4],  # -x
+            [1, 2, 6, 5],  # +x
         ]
 
         return [TexturedFace(indices) for indices in face_indices]
