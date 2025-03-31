@@ -41,7 +41,9 @@ class Renderer:
         H = self.get_face_homography(texture, face_vertices_2d)
 
         mask = np.zeros((self.height, self.width), dtype=np.uint8)
-        cv2.fillConvexPoly(mask, face_vertices_2d, 255)
+        cv2.fillConvexPoly(
+            mask, face_vertices_2d, 255
+        )  # Coordinates inside the face are set to 255
         y_face_indices, x_face_indices = np.where(mask == 255)
         face_pixels = np.column_stack(
             (x_face_indices, y_face_indices, np.ones_like(x_face_indices))
